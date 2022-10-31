@@ -20,31 +20,31 @@ e casamento de padrões é restrito a comparação de valores, i.e. corresponde 
 uma série de comandos if-then-else. Por último, não estão presentes tipos básicos comuns como
 caracteres ou strings, ou tipos estruturados como tipos de dados algébricos e estruturas.
 
-• Environ
+• Environ:
 Este módulo define o tipo de um ambiente genérico e uma função de lookup para ele.
 Ele já é provido completo através do arquivo Environ.sml em project.zip. Você precisará
 de instanciações deste tipo e usará lookup no verificador de tipos e no interpretador.
 
-• Absyn
+• Absyn:
 Este módulo define a sintaxe abstrata de PLC. Ele já é provido completo no arquivo Absyn.sml
 em project.zip. Ele contém uma função auxiliar val2string que pode ser usada para
 implementar print.
 
-• PlcParserAux
+• PlcParserAux:
 Este módulo define funções auxiliares para parsing. Note que para algumas das funções em
 PlcParserAux.sml apenas suas assinaturas são providas. As implementações deverão ser
 completadas por você.
 
-• PlcParser
+• PlcParser:
 Este módulo contem o parser para a linguagem PLC, nos arquivos PlcParser.yacc.sig e
 PlcParser.yacc.sml, a serem gerados automaticamente através do processo descrito na Seção 6.
 
-• Lexer
+• Lexer:
 Este módulo contem o lexer para a linguagem PLC, no arquivo PlcLexer.lex.sml, a ser
 gerado automaticamente através do processo descrito na Seção 6. O lexer pode prover suporte
 a comentários, que em PLC seguem o formato (* ... *), mas isto não é obrigatório.
 
-• Parse
+• Parse:
 Este módulo, provido no arquivo Parse.sml, define a função fromString, que faz parsing
 de um programa PLC a partir de uma string, e a função fromFile, que faz parsing de um
 programa PLC em um arquivo de texto. Você pode usar essas funções para testar seu parser,
