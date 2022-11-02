@@ -12,10 +12,14 @@ type lexresult = (slvalue, pos)token
 val error = fn x => TextIO.output(TextIO.stdOut, x ^ "\n")
 val lineNumber = ref 0
 
-fun strToInt s =
-    case Int.fromString s of
-    SOME i => i
-    |  NONE => raise Fail ("Could not convert string '" ^ s ^ "' to integer")
+fun stringToInt string =
+    let
+        val i = Int.fromString string
+    in
+        case i of
+            SOME i => i
+            | NONE => raise Fail ("Could not convert '" ^ string ^ "' to integer")
+    end
 
 (* Get the current line being read. *)
 fun getLineAsString() =
@@ -68,7 +72,7 @@ identifier=[a-zA-Z_][a-zA-Z_0-9]*;
 <COMMENTARY>"*)" => (YYBEGIN INITIAL; lex());
 <COMMENTARY>. => (lex());
 <INITIAL>{whitespace}+ => (lex());
-<INITIAL>{digit}+ => (CINT(strToInt(yytext), yypos, yypos));
+<INITIAL>{digit}+ => (CINT(stringToInt(yytext), yypos, yypos));
 <INITIAL>{identifier} => (keyWord(yytext, yypos, yypos));
 <INITIAL>"!" => (NEGACAO(yypos, yypos));
 <INITIAL>"&&" => (E(yypos, yypos));
