@@ -13,10 +13,10 @@
     | NADA | BOOLEANO | INTEIRO
     | VERDADEIRO | FALSO | FUNCAO | NOME of string
     | SOMA | SUBTRACAO | MULTIPLICACAO | DIVISAO 
-    | IGUAL | DIFERENTE | MENOR_QUE | MENOR_OU_IGUAL 
+    | IGUALDADE | DIFERENTE | MENOR_QUE | MENOR_OU_IGUAL 
     | CONSTRUTOR | DOIS_PONTOS | PONTO_VIRGULA | VIRGULA | SETA | BARRA_VERTICAL | SETA_FUNCIONAL
     | ABRE_PARENTESES | FECHA_PARENTESES | ABRE_CHAVES | FECHA_CHAVES | ABRE_COLCHETES | FECHA_COLCHETES
-    | CONST_INT of int 
+    | CINT of int 
     | EOF
 
 %nonterm Prog of expr 
@@ -41,7 +41,7 @@
 %nonassoc SE
 %left SE_NAO 
 %left E 
-%left IGUAL DIFERENTE
+%left IGUALDADE DIFERENTE
 %left MENOR_QUE MENOR_OU_IGUAL
 %right CONSTRUTOR
 %left SOMA SUBTRACAO
@@ -58,9 +58,9 @@
 Prog: Expr (Expr) 
     | Decl (Decl)
 
-Decl: VAR NOME IGUAL Expr PONTO_VIRGULA Prog (Let(NOME, Expr, Prog))
-    | FUNCAO NOME Args IGUAL Expr PONTO_VIRGULA Prog (Let(NOME, makeAnon(Args, Expr), Prog))
-    | FUNCAO RECURSAO NOME Args CONSTRUTOR Type IGUAL Expr PONTO_VIRGULA Prog (makeFun(NOME, Args, Type, Expr, Prog))
+Decl: VAR NOME IGUALDADE Expr PONTO_VIRGULA Prog (Let(NOME, Expr, Prog))
+    | FUNCAO NOME Args IGUALDADE Expr PONTO_VIRGULA Prog (Let(NOME, makeAnon(Args, Expr), Prog))
+    | FUNCAO RECURSAO NOME Args DOIS_PONTOS Type IGUALDADE Expr PONTO_VIRGULA Prog (makeFun(NOME, Args, Type, Expr, Prog))
 
 Expr: AtomExpr(AtomExpr)
     | AppExpr(AppExpr)
@@ -77,26 +77,26 @@ Expr: AtomExpr(AtomExpr)
     | Expr MULTIPLICACAO Expr (Prim2("*", Expr1, Expr2))
     | Expr DIVISAO Expr (Prim2("/", Expr1, Expr2))
     | SUBTRACAO Expr (Prim1("-", Expr))
-    | Expr IGUAL Expr (Prim2("=", Expr1, Expr2))
+    | Expr IGUALDADE Expr (Prim2("=", Expr1, Expr2))
     | Expr DIFERENTE Expr (Prim2("!=", Expr1, Expr2))
     | Expr MENOR_QUE Expr (Prim2("<", Expr1, Expr2))
     | Expr MENOR_OU_IGUAL Expr (Prim2("<=", Expr1, Expr2))
     | Expr CONSTRUTOR Expr (Prim2("::", Expr1, Expr2))
     | Expr PONTO_VIRGULA Expr (Prim2(";", Expr1, Expr2))
-    | Expr ABRE_COLCHETES CONST_INT FECHA_COLCHETES (Item (CONST_INT, Expr))
+    | Expr ABRE_COLCHETES CINT FECHA_COLCHETES (Item (CINT, Expr))
 
 AtomExpr: Const (Const)
     | NOME (Var(NOME))
     | ABRE_CHAVES Prog FECHA_CHAVES (Prog)
     | ABRE_PARENTESES Comps FECHA_PARENTESES (List Comps)
-    | ABRE_CHAVES Expr FECHA_PARENTESES (Expr)
+    | ABRE_PARENTESES Expr FECHA_PARENTESES (Expr)
     | FN Args SETA_FUNCIONAL Expr FIM (makeAnon(Args, Expr))
 
 AppExpr: AtomExpr AtomExpr (Call(AtomExpr1, AtomExpr2))
     | AppExpr AtomExpr (Call(AppExpr, AtomExpr))
 
 Const: VERDADEIRO (ConB true) | FALSO (ConB false)
-    | CONST_INT (ConI CONST_INT)
+    | CINT (ConI CINT)
     | ABRE_PARENTESES FECHA_PARENTESES (List [])
     | ABRE_PARENTESES Type ABRE_COLCHETES FECHA_COLCHETES FECHA_PARENTESES (ESeq(Type))
 

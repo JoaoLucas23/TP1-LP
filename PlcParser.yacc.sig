@@ -3,7 +3,7 @@ sig
 type ('a,'b) token
 type svalue
 val EOF:  'a * 'a -> (svalue,'a) token
-val CONST_INT: (int) *  'a * 'a -> (svalue,'a) token
+val CINT: (int) *  'a * 'a -> (svalue,'a) token
 val FECHA_COLCHETES:  'a * 'a -> (svalue,'a) token
 val ABRE_COLCHETES:  'a * 'a -> (svalue,'a) token
 val FECHA_CHAVES:  'a * 'a -> (svalue,'a) token
@@ -20,7 +20,7 @@ val CONSTRUTOR:  'a * 'a -> (svalue,'a) token
 val MENOR_OU_IGUAL:  'a * 'a -> (svalue,'a) token
 val MENOR_QUE:  'a * 'a -> (svalue,'a) token
 val DIFERENTE:  'a * 'a -> (svalue,'a) token
-val IGUAL:  'a * 'a -> (svalue,'a) token
+val IGUALDADE:  'a * 'a -> (svalue,'a) token
 val DIVISAO:  'a * 'a -> (svalue,'a) token
 val MULTIPLICACAO:  'a * 'a -> (svalue,'a) token
 val SUBTRACAO:  'a * 'a -> (svalue,'a) token

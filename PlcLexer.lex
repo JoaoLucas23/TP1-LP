@@ -12,10 +12,10 @@ type lexresult = (slvalue, pos)token
 val error = fn x => TextIO.output(TextIO.stdOut, x ^ "\n")
 val lineNumber = ref 0
 
-fun stringToInt string = 
-    case Int.fromString string of
+fun strToInt s =
+    case Int.fromString s of
     SOME i => i
-    | NONE => raise Fail ("Erro: '"^ string ^"' não pode ser convertido para inteiro")
+    |  NONE => raise Fail ("Could not convert string '" ^ s ^ "' to integer")
 
 (* Get the current line being read. *)
 fun getLineAsString() =
@@ -25,31 +25,29 @@ fun getLineAsString() =
         Int.toString lineNum
     end
 
-(* Define what to do with the key words *)
-fun keyWord (word, left, right) = 
-    case word of
-    "var" => VAR (left, right)
-    | "then" => ENTAO (left, right)
-    | "else" => SE_NAO (left, right)
-    | "match" => CORRESPONDE (left, right)
-    | "with" => COM (left, right)
-    | "end" => FIM (left, right)
-    | "fn" => FN (left, right)
-    | "rec" => RECURSAO (left, right)
-    | "if" => SE (left, right)
-    | "hd" => CABECA (left, right)
-    | "tl" => CAUDA (left, right)
-    | "ise" => VAZIO (left, right)
-    | "_" => UNDERLINE (left, right)
-    | "Nil" => NADA (left, right)
-    | "Bool" => BOOLEANO (left, right)
-    | "Int" => INTEIRO (left, right)
-    | "true" => VERDADEIRO (left, right)
-    | "false" => FALSO (left, right)
-    | "fun" => FUNCAO (left, right)
-    | "print" => IMPRIME (left, right)
-    | _ => NOME (word, left, right)
-
+fun keyWord (w, l, r) = 
+    case w of
+    "var" => VAR (l, r)
+    | "end" => FIM (l, r)
+    | "fn" => FN (l, r)
+    | "rec" => RECURSAO (l, r)
+    | "if" => SE (l, r)
+    | "then" => ENTAO (l, r)
+    | "else" => SE_NAO (l, r)
+    | "match" => CORRESPONDE (l, r)
+    | "with" => COM (l, r)
+    | "hd" => CABECA (l, r)
+    | "tl" => CAUDA (l, r)
+    | "ise" => VAZIO (l, r)
+    | "print" => IMPRIME (l, r)
+    | "_" => UNDERLINE (l, r)
+    | "Nil" => NADA (l, r)
+    | "Bool" => BOOLEANO (l, r)
+    | "Int" => INTEIRO (l, r)
+    | "true" => VERDADEIRO (l, r)
+    | "false" => FALSO (l, r)
+    | "fun" => FUNCAO (l, r)
+    | _ => NOME (w, l, r)
 
 (* Define what to do when the end of the file is reached. *)
 fun eof () = Tokens.EOF(0,0)
@@ -58,6 +56,7 @@ fun eof () = Tokens.EOF(0,0)
 fun init() = ()
 %%
 %header (functor PlcLexerFun(structure Tokens: PlcParser_TOKENS));
+alpha=[A-Za-z];
 digit=[0-9];
 whitespace=[\ \t];
 identifier=[a-zA-Z_][a-zA-Z_0-9]*;
@@ -69,7 +68,7 @@ identifier=[a-zA-Z_][a-zA-Z_0-9]*;
 <COMMENTARY>"*)" => (YYBEGIN INITIAL; lex());
 <COMMENTARY>. => (lex());
 <INITIAL>{whitespace}+ => (lex());
-<INITIAL>{digit}+ => (CONST_INT(stringToInt(yytext), yypos, yypos));
+<INITIAL>{digit}+ => (CINT(strToInt(yytext), yypos, yypos));
 <INITIAL>{identifier} => (keyWord(yytext, yypos, yypos));
 <INITIAL>"!" => (NEGACAO(yypos, yypos));
 <INITIAL>"&&" => (E(yypos, yypos));
@@ -77,7 +76,7 @@ identifier=[a-zA-Z_][a-zA-Z_0-9]*;
 <INITIAL>"-" => (SUBTRACAO(yypos, yypos));
 <INITIAL>"*" => (MULTIPLICACAO(yypos, yypos));
 <INITIAL>"/" => (DIVISAO(yypos, yypos));
-<INITIAL>"=" => (IGUAL(yypos, yypos));
+<INITIAL>"=" => (IGUALDADE(yypos, yypos));
 <INITIAL>"!=" => (DIFERENTE(yypos, yypos));
 <INITIAL>"<" => (MENOR_QUE(yypos, yypos));
 <INITIAL>"<=" => (MENOR_OU_IGUAL(yypos, yypos));
@@ -94,5 +93,5 @@ identifier=[a-zA-Z_][a-zA-Z_0-9]*;
 <INITIAL>"}" => (FECHA_CHAVES(yypos, yypos));
 <INITIAL>"[" => (ABRE_COLCHETES(yypos, yypos));
 <INITIAL>"]" => (FECHA_COLCHETES(yypos, yypos));
-<INITIAL>. => (error("\n***Erro no Lexer: caracter nao reconhecido***\n");
-    raise Fail("Erro no Lexer: caracter nao reconhecido" ^yytext));
+<INITIAL>. => (error("\n***Lexer error: bad character ***\n");
+    raise Fail("Lexer error: bad character " ^yytext));

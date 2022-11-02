@@ -1,16 +1,14 @@
-use "Absyn.sml";
-
 val cases =
   (
-    let val s = "0";
-        val e = ConI 0
+    let val s = "5+3*4";
+        val e = Prim2 ("+",ConI 5,Prim2 ("*",ConI 3,ConI 4))
     in
         (s, e)
     end
   ) ::
   (
-    let val s = "5+3*4";
-        val e = Prim2 ("+",ConI 5,Prim2 ("*",ConI 3,ConI 4))
+    let val s = "0";
+        val e = ConI 0
     in
         (s, e)
     end

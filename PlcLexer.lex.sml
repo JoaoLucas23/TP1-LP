@@ -16,10 +16,10 @@ type lexresult = (slvalue, pos)token
 val error = fn x => TextIO.output(TextIO.stdOut, x ^ "\n")
 val lineNumber = ref 0
 
-fun stringToInt string = 
-    case Int.fromString string of
+fun strToInt s =
+    case Int.fromString s of
     SOME i => i
-    | NONE => raise Fail ("Erro: '"^ string ^"' não pode ser convertido para inteiro")
+    |  NONE => raise Fail ("Could not convert string '" ^ s ^ "' to integer")
 
 (* Get the current line being read. *)
 fun getLineAsString() =
@@ -29,31 +29,29 @@ fun getLineAsString() =
         Int.toString lineNum
     end
 
-(* Define what to do with the key words *)
-fun keyWord (word, left, right) = 
-    case word of
-    "var" => VAR (left, right)
-    | "then" => ENTAO (left, right)
-    | "else" => SE_NAO (left, right)
-    | "match" => CORRESPONDE (left, right)
-    | "with" => COM (left, right)
-    | "end" => FIM (left, right)
-    | "fn" => FN (left, right)
-    | "rec" => RECURSAO (left, right)
-    | "if" => SE (left, right)
-    | "hd" => CABECA (left, right)
-    | "tl" => CAUDA (left, right)
-    | "ise" => VAZIO (left, right)
-    | "_" => UNDERLINE (left, right)
-    | "Nil" => NADA (left, right)
-    | "Bool" => BOOLEANO (left, right)
-    | "Int" => INTEIRO (left, right)
-    | "true" => VERDADEIRO (left, right)
-    | "false" => FALSO (left, right)
-    | "fun" => FUNCAO (left, right)
-    | "print" => IMPRIME (left, right)
-    | _ => NOME (word, left, right)
-
+fun keyWord (w, l, r) = 
+    case w of
+    "var" => VAR (l, r)
+    | "end" => FIM (l, r)
+    | "fn" => FN (l, r)
+    | "rec" => RECURSAO (l, r)
+    | "if" => SE (l, r)
+    | "then" => ENTAO (l, r)
+    | "else" => SE_NAO (l, r)
+    | "match" => CORRESPONDE (l, r)
+    | "with" => COM (l, r)
+    | "hd" => CABECA (l, r)
+    | "tl" => CAUDA (l, r)
+    | "ise" => VAZIO (l, r)
+    | "print" => IMPRIME (l, r)
+    | "_" => UNDERLINE (l, r)
+    | "Nil" => NADA (l, r)
+    | "Bool" => BOOLEANO (l, r)
+    | "Int" => INTEIRO (l, r)
+    | "true" => VERDADEIRO (l, r)
+    | "false" => FALSO (l, r)
+    | "fun" => FUNCAO (l, r)
+    | _ => NOME (w, l, r)
 
 (* Define what to do when the end of the file is reached. *)
 fun eof () = Tokens.EOF(0,0)
@@ -317,7 +315,7 @@ let fun continue() = lex() in
 
   1 => (lineNumber := !lineNumber + 1; lex())
 | 12 => (lex())
-| 15 => let val yytext=yymktext() in CONST_INT(stringToInt(yytext), yypos, yypos) end
+| 15 => let val yytext=yymktext() in CINT(strToInt(yytext), yypos, yypos) end
 | 18 => let val yytext=yymktext() in keyWord(yytext, yypos, yypos) end
 | 20 => (NEGACAO(yypos, yypos))
 | 23 => (E(yypos, yypos))
@@ -325,7 +323,7 @@ let fun continue() = lex() in
 | 27 => (SUBTRACAO(yypos, yypos))
 | 29 => (MULTIPLICACAO(yypos, yypos))
 | 31 => (DIVISAO(yypos, yypos))
-| 33 => (IGUAL(yypos, yypos))
+| 33 => (IGUALDADE(yypos, yypos))
 | 36 => (DIFERENTE(yypos, yypos))
 | 38 => (MENOR_QUE(yypos, yypos))
 | 4 => (YYBEGIN COMMENTARY; lex())
@@ -344,8 +342,8 @@ let fun continue() = lex() in
 | 68 => (ABRE_COLCHETES(yypos, yypos))
 | 7 => (YYBEGIN INITIAL; lex())
 | 70 => (FECHA_COLCHETES(yypos, yypos))
-| 72 => let val yytext=yymktext() in error("\n***Erro no Lexer: caracter nao reconhecido***\n");
-    raise Fail("Erro no Lexer: caracter nao reconhecido" ^yytext) end
+| 72 => let val yytext=yymktext() in error("\n***Lexer error: bad character ***\n");
+    raise Fail("Lexer error: bad character " ^yytext) end
 | 9 => (lex())
 | _ => raise Internal.LexerError
 

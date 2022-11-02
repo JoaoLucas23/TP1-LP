@@ -39,7 +39,7 @@ use "testParserCases.sml";
 fun testCases [] = "TODOS TESTES PASSARAM!"
    | testCases ((x:string,y:expr)::cauda) = 
       if (fromString(x) = y) 
-      then casosTeste(cauda) 
+      then testCases(cauda) 
       else "ERRO NOS TESTES!";
 
 testCases(cases);
