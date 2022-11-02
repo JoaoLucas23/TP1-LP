@@ -31,7 +31,15 @@ fromString "fun f(Int x) = x; f(1)";
 fromString "match x with | 0 -> 1| _ -> -1 end";
 fromFile ("example.plc");
 
-use "testParserCases.sml"
+use "testParserCases.sml";
 
 (* Try to add a systematic way of using the test cases in
    testParserCases to stress test your parser *)
+
+fun testCases [] = "TODOS TESTES PASSARAM!"
+   | testCases ((x:string,y:expr)::cauda) = 
+      if (fromString(x) = y) 
+      then casosTeste(cauda) 
+      else "ERRO NOS TESTES!";
+
+testCases(cases);
